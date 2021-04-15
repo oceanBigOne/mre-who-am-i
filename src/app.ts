@@ -177,7 +177,7 @@ export default class WearAName {
 				},
 				transform: {
 					local: {
-						position: { x: 0, y: 0.4, z: -0.299 },
+						position: { x: 0, y: 0.4, z: -0.25 },
 						rotation: MRE.Quaternion.FromEulerAngles(
 							0 * MRE.DegreesToRadians,
 							0 * MRE.DegreesToRadians,
