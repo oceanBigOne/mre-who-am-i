@@ -31,10 +31,8 @@ type NameDescriptor = {
 };
 
 
+const allowedCountries: string[] = ["france", "world"];
 
-// Load the database of names.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const NameDatabase: string[] = require('../public/names.json');
 
 /**
  * WearAName Application - Showcasing avatar attachments.
@@ -43,20 +41,33 @@ export default class WearAName {
 	// Container for preloaded name prefabs.
 	private hat: MRE.Actor = null;
 	private assets: MRE.AssetContainer;
-	private prefabs: { [key: string]: MRE.Prefab } = {};
 	// Container for instantiated names.
 	private attachedNames = new Map<MRE.Guid, MRE.Actor>();
 	private attachedLabel = new Map<MRE.Guid, MRE.Actor>();
+	private country: string;
+	private NameDatabase: string[];
 	/**
 	 * Constructs a new instance of this class.
 	 * @param context The MRE SDK context.
 	 * @param baseUrl The baseUrl to this project's `./public` folder.
 	 */
-	constructor(private context: MRE.Context) {
+	constructor(private context: MRE.Context, private params: MRE.ParameterSet) {
+		this.country = this.params.country as string
+
+		if (this.params.country === undefined) {
+			this.country = "world";
+		}
+		if (allowedCountries.includes(this.country) === false) {
+			this.country = "world";
+		}
+		const uri = '../public/countries/' + this.country + '.json';
+		this.NameDatabase = require(uri);
+
 		this.assets = new MRE.AssetContainer(context);
 		// Hook the context events we're interested in.
 		this.context.onStarted(() => this.started());
 		this.context.onUserLeft(user => this.userLeft(user));
+
 	}
 
 	/**
@@ -105,9 +116,7 @@ export default class WearAName {
 
 
 	private showHat = async () => {
-
 		const hatData = await this.assets.loadGltf('hat.glb', "mesh");
-
 		// spawn a copy of the glTF model
 		this.hat = MRE.Actor.CreateFromPrefab(this.context, {
 			// using the data we loaded earlier
@@ -129,13 +138,28 @@ export default class WearAName {
 
 		buttonBehavior.onClick(user => this.wearName(user.id));
 
+		MRE.Actor.Create(this.context, {
+			actor: {
+				parentId: this.hat.id,
+				name: 'label',
+				text: {
+					contents: "Version : " + this.country,
+					height: 0.1,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: { position: { x: 0, y: 1, z: 0 } }
+				}
+			}
+		});
+
 	}
 
 	private wearName(userId: MRE.Guid) {
 
 		// If the user is wearing a hat, destroy it.
 		this.removeNames(this.context.user(userId));
-		const names = NameDatabase;
+		const names = this.NameDatabase;
 		const name = names[Math.round(Math.random() * names.length)];
 		const label3D = MRE.Actor.Create(this.context, {
 			actor: {
@@ -177,7 +201,7 @@ export default class WearAName {
 				},
 				transform: {
 					local: {
-						position: { x: 0, y: 0.4, z: -0.25 },
+						position: { x: 0, y: 0.4, z: -0.27 },
 						rotation: MRE.Quaternion.FromEulerAngles(
 							0 * MRE.DegreesToRadians,
 							0 * MRE.DegreesToRadians,
@@ -197,8 +221,6 @@ export default class WearAName {
 		this.attachedNames.set(userId, label3D);
 		this.attachedLabel.set(userId, labelBackground);
 	}
-
-
 
 	private removeNames(user: MRE.User) {
 		if (this.attachedNames.has(user.id)) { this.attachedNames.get(user.id).destroy(); }
