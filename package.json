@@ -1,17 +1,18 @@
 {
-  "name": "wear-a-hat",
-  "version": "0.1.0",
+  "name": "who-i-am",
+  "version": "1.0.0",
   "private": true,
   "description": "",
   "main": "built/server.js",
-  "author": "Microsoft Corporation",
+  "author": "Clement GARROT",
   "license": "MIT",
   "keywords": [
     "mixed reality",
     "virtual reality",
     "vr",
     "altspacevr",
-    "sample",
+    "game",
+    "ice-breaker",
     "node"
   ],
   "engines": {
