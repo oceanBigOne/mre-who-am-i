@@ -1,6 +1,8 @@
-### Who Am I : MRE for ALTSPACE
+### Who Am I : MRE for ALTSPACEVR
 
 This is a small ice-breaker game based on WearAHat sample code from Microsoft.
+
+Thanks to [@Extremys](https://github.com/Extremys) for help !
 
 ## How to play ?
 This MRE add a hat. Player can click into the Hat to pick a name which will be attached on his back.
