@@ -62,7 +62,7 @@ export default class WearAName {
 	// no more than once every 5000 ms (1 sec).
 	//==========================
 	private syncfix = new UserSyncFix(5000);
-	
+
 	constructor(private context: MRE.Context, private params: MRE.ParameterSet) {
 		this.country = this.params.country as string
 
@@ -82,7 +82,7 @@ export default class WearAName {
 		this.context.onUserLeft(user => this.userLeft(user));
 
 	}
-	
+
 	/**
 	 * Synchronization function for attachments
 	 * Need to detach and reattach every attachment
@@ -150,7 +150,7 @@ export default class WearAName {
 	private startedImpl = async () => {
 		await this.showHat();
 	}
-	
+
 	private userJoined(user: MRE.User) {
 		//==========================
 		// Let 'syncfix' know a user has joined.
@@ -195,14 +195,42 @@ export default class WearAName {
 		MRE.Actor.Create(this.context, {
 			actor: {
 				parentId: this.hat.id,
-				name: 'label',
+				name: 'label1',
 				text: {
 					contents: "Version : " + this.country,
-					height: 0.1,
+					height: 0.04,
 					anchor: MRE.TextAnchorLocation.MiddleCenter
 				},
 				transform: {
-					local: { position: { x: 0, y: 1, z: 0 } }
+					local: { position: { x: 0, y: 1.75, z: 0 } }
+				}
+			}
+		});
+		MRE.Actor.Create(this.context, {
+			actor: {
+				parentId: this.hat.id,
+				name: 'label2',
+				text: {
+					contents: "Click on the hat to get a random name",
+					height: 0.05,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: { position: { x: 0, y: 1.9, z: 0 } }
+				}
+			}
+		});
+		MRE.Actor.Create(this.context, {
+			actor: {
+				parentId: this.hat.id,
+				name: 'label3',
+				text: {
+					contents: "Then try to guess your name by asking other players",
+					height: 0.035,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: { position: { x: 0, y: 1.85, z: 0 } }
 				}
 			}
 		});
@@ -227,16 +255,16 @@ export default class WearAName {
 				},
 				transform: {
 					local: {
-						position: { x: 0, y: 0.4, z: -0.3 },
+						position: { x: 0, y: 0.2, z: 0.18 },
 						rotation: MRE.Quaternion.FromEulerAngles(
 							0 * MRE.DegreesToRadians,
-							0 * MRE.DegreesToRadians,
+							180 * MRE.DegreesToRadians,
 							0 * MRE.DegreesToRadians),
 						scale: { x: 0.08, y: 0.08, z: 0.08 }
 					}
 				},
 				attachment: {
-					attachPoint: 'hips',
+					attachPoint: 'head',
 					userId
 
 				}
@@ -255,16 +283,16 @@ export default class WearAName {
 				},
 				transform: {
 					local: {
-						position: { x: 0, y: 0.4, z: -0.27 },
+						position: { x: 0, y: 0.2, z: 0.15 },
 						rotation: MRE.Quaternion.FromEulerAngles(
 							0 * MRE.DegreesToRadians,
-							0 * MRE.DegreesToRadians,
+							180 * MRE.DegreesToRadians,
 							0 * MRE.DegreesToRadians),
 						scale: { x: 0.08, y: 0.08, z: 0.08 }
 					}
 				},
 				attachment: {
-					attachPoint: 'hips',
+					attachPoint: 'head',
 					userId
 
 				}
