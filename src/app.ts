@@ -7,6 +7,11 @@ import * as MRE from '@microsoft/mixed-reality-extension-sdk';
 import { AttachPoint } from '@microsoft/mixed-reality-extension-sdk';
 
 /**
+ * Import the sync-fix module.
+ */
+import { UserSyncFix } from './sync-fix'
+
+/**
  * The structure of a name entry in the name database.
  */
 type NameDescriptor = {
@@ -51,6 +56,13 @@ export default class WearAName {
 	 * @param context The MRE SDK context.
 	 * @param baseUrl The baseUrl to this project's `./public` folder.
 	 */
+	//==========================
+	// Declare a syncfix attribute to handle the synchronization fixes.
+	// In this case, syncfix will call the synchronization functions
+	// no more than once every 5000 ms (1 sec).
+	//==========================
+	private syncfix = new UserSyncFix(5000);
+	
 	constructor(private context: MRE.Context, private params: MRE.ParameterSet) {
 		this.country = this.params.country as string
 
@@ -66,10 +78,41 @@ export default class WearAName {
 		this.assets = new MRE.AssetContainer(context);
 		// Hook the context events we're interested in.
 		this.context.onStarted(() => this.started());
+		this.context.onUserJoined((user) => this.userJoined(user));
 		this.context.onUserLeft(user => this.userLeft(user));
 
 	}
+	
+	/**
+	 * Synchronization function for attachments
+	 * Need to detach and reattach every attachment
+	 */
+	private synchronizeAttachments() {
+		// Loop through all values in the 'attachments' map
+		// The [key, value] syntax breaks each entry of the map into its key and
+		// value automatically.  In the case of 'attachments', the key is the
+		// Guid of the user and the value is the actor/attachment.
+		for (const [userId, attachedNames] of this.attachedNames) {
+			// Store the current attachpoint.
+			const attachPoint = attachedNames.attachment.attachPoint;
 
+			// Detach from the user
+			attachedNames.detach();
+
+			// Reattach to the user
+			attachedNames.attach(userId, attachPoint);
+		}
+		for (const [userId, attachedLabel] of this.attachedLabel) {
+			// Store the current attachpoint.
+			const attachPoint = attachedLabel.attachment.attachPoint;
+
+			// Detach from the user
+			attachedLabel.detach();
+
+			// Reattach to the user
+			attachedLabel.attach(userId, attachPoint);
+		}
+	}
 	/**
 	 * Called when a Names application session starts up.
 	 */
@@ -98,10 +141,21 @@ export default class WearAName {
 		} else {
 			await this.startedImpl();
 		}
+		//==========================
+		// Set up the synchronization function
+		//==========================
+		this.syncfix.addSyncFunc(() => this.synchronizeAttachments());
 	}
 
 	private startedImpl = async () => {
 		await this.showHat();
+	}
+	
+	private userJoined(user: MRE.User) {
+		//==========================
+		// Let 'syncfix' know a user has joined.
+		//==========================
+		this.syncfix.userJoined();
 	}
 
 	/**
