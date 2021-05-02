@@ -167,6 +167,7 @@ export default class WearAName {
 		// Let 'syncfix' know a user has joined.
 		//==========================
 		this.syncfix.userJoined();
+		//console.log(user.id);
 	}
 
 	/**
@@ -185,6 +186,7 @@ export default class WearAName {
 		await this.createPlayBtn();
 		await this.createRemoveBtn();
 		await this.createInfoBtn();
+
 
 		MRE.Actor.Create(this.context, {
 			actor: {
