@@ -45,6 +45,14 @@ const allowedCountries: string[] = ["france", "world"];
 export default class WearAName {
 	// Container for preloaded name prefabs.
 	private hat: MRE.Actor = null;
+	private rule1: MRE.Actor = null;
+	private rule2: MRE.Actor = null;
+	private rule3: MRE.Actor = null;
+	private rule4: MRE.Actor = null;
+
+	private btnPlay: MRE.Actor = null;
+	private btnInfo: MRE.Actor = null;
+	private btnRemove: MRE.Actor = null;
 	private assets: MRE.AssetContainer;
 	// Container for instantiated names.
 	private attachedNames = new Map<MRE.Guid, MRE.Actor>();
@@ -170,6 +178,36 @@ export default class WearAName {
 
 
 	private showHat = async () => {
+		await this.createHat();
+		await this.createPlayBtn();
+		await this.createRemoveBtn();
+		await this.createInfoBtn();
+
+		MRE.Actor.Create(this.context, {
+			actor: {
+				parentId: this.hat.id,
+				name: 'country',
+				text: {
+					contents: this.country,
+					height: 0.06,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: {
+						position: { x: 0, y: 0.7, z: 0.3 },
+						rotation: MRE.Quaternion.FromEulerAngles(
+							0 * MRE.DegreesToRadians,
+							180 * MRE.DegreesToRadians,
+							0 * MRE.DegreesToRadians)
+					}
+				}
+			}
+		});
+
+	}
+	private async createHat() {
+
+		//get 3D
 		const hatData = await this.assets.loadGltf('hat.glb', "mesh");
 		// spawn a copy of the glTF model
 		this.hat = MRE.Actor.CreateFromPrefab(this.context, {
@@ -181,59 +219,108 @@ export default class WearAName {
 				name: 'Hat',
 				transform: {
 					local: {
-						position: { x: 0, y: 0.5, z: 0 },
+						position: { x: 0, y: 0, z: 0 },
 						scale: { x: 1, y: 1, z: 1 }
 					}
 				}
 			}
 		});
 
-		const buttonBehavior = this.hat.setBehavior(MRE.ButtonBehavior);
+	}
 
-		buttonBehavior.onClick(user => this.wearName(user.id));
+	private async createPlayBtn() {
 
-		MRE.Actor.Create(this.context, {
+		//get 3D
+		const btnPlayData = await this.assets.loadGltf('btn-play.glb', "mesh");
+
+		this.btnPlay = MRE.Actor.CreateFromPrefab(this.context, {
+			firstPrefabFrom: btnPlayData,
 			actor: {
-				parentId: this.hat.id,
-				name: 'label1',
-				text: {
-					contents: "Version : " + this.country,
-					height: 0.04,
-					anchor: MRE.TextAnchorLocation.MiddleCenter
-				},
+				collider: { geometry: { shape: MRE.ColliderType.Auto } },
+				name: 'btnPlay',
 				transform: {
-					local: { position: { x: 0, y: 1.75, z: 0 } }
+					local: {
+						position: { x: 0, y: 0, z: 0 },
+						scale: { x: 1, y: 1, z: 1 }
+					}
 				}
 			}
 		});
-		MRE.Actor.Create(this.context, {
+
+		setTimeout(() => {
+			const animBtnPlay = this.btnPlay.targetingAnimationsByName.get("Take 001");
+			animBtnPlay.wrapMode = MRE.AnimationWrapMode.Loop;
+			animBtnPlay.play();
+
+			//add button behavior
+			const buttonPlayBehavior = this.btnPlay.setBehavior(MRE.ButtonBehavior);
+			buttonPlayBehavior.onClick(user => this.wearName(user.id));
+		}, 1000);
+
+	}
+
+	private async createRemoveBtn() {
+
+		//get 3D
+		const btnCloseData = await this.assets.loadGltf('btn-close.glb', "mesh");
+
+		this.btnRemove = MRE.Actor.CreateFromPrefab(this.context, {
+			firstPrefabFrom: btnCloseData,
 			actor: {
-				parentId: this.hat.id,
-				name: 'label2',
-				text: {
-					contents: "Click on the hat to get a random name",
-					height: 0.05,
-					anchor: MRE.TextAnchorLocation.MiddleCenter
-				},
+				collider: { geometry: { shape: MRE.ColliderType.Auto } },
+				name: 'btnPlay',
 				transform: {
-					local: { position: { x: 0, y: 1.9, z: 0 } }
+					local: {
+						position: { x: 0, y: 0, z: 0 },
+						scale: { x: 1, y: 1, z: 1 }
+					}
 				}
 			}
 		});
-		MRE.Actor.Create(this.context, {
+
+		setTimeout(() => {
+			const animBtnRemove = this.btnRemove.targetingAnimationsByName.get("Take 001");
+			animBtnRemove.wrapMode = MRE.AnimationWrapMode.Loop;
+			animBtnRemove.play();
+
+			//add button behavior
+			const buttonCloseBehavior = this.btnRemove.setBehavior(MRE.ButtonBehavior);
+			buttonCloseBehavior.onClick(user => this.removeNames(user));
+		}, 1000);
+
+	}
+
+	private async createInfoBtn() {
+
+		//get 3D
+		const btnInfoData = await this.assets.loadGltf('btn-info.glb', "mesh");
+
+		this.btnInfo = MRE.Actor.CreateFromPrefab(this.context, {
+			firstPrefabFrom: btnInfoData,
 			actor: {
-				parentId: this.hat.id,
-				name: 'label3',
-				text: {
-					contents: "Then try to guess your name by asking other players",
-					height: 0.035,
-					anchor: MRE.TextAnchorLocation.MiddleCenter
-				},
+				collider: { geometry: { shape: MRE.ColliderType.Auto } },
+				name: 'btnInfo',
 				transform: {
-					local: { position: { x: 0, y: 1.85, z: 0 } }
+					local: {
+						position: { x: 0, y: 0, z: 0 },
+						scale: { x: 1, y: 1, z: 1 }
+					}
 				}
 			}
 		});
+
+		setTimeout(() => {
+			const animBtnInfo = this.btnInfo.targetingAnimationsByName.get("Take 001");
+			animBtnInfo.wrapMode = MRE.AnimationWrapMode.Loop;
+			animBtnInfo.play();
+
+			//add button behavior
+			const buttonInfoBehavior = this.btnInfo.setBehavior(MRE.ButtonBehavior);
+			buttonInfoBehavior.onHover('enter', user => this.toggleRules(user));
+			buttonInfoBehavior.onHover('exit', user => this.toggleRules(user));
+
+		}, 1000);
+
 
 	}
 
@@ -310,4 +397,109 @@ export default class WearAName {
 		if (this.attachedLabel.has(user.id)) { this.attachedLabel.get(user.id).destroy(); }
 		this.attachedLabel.delete(user.id);
 	}
+
+	private toggleRules(user: MRE.User) {
+		if (!this.rule1) {
+			this.rule1 = MRE.Actor.Create(this.context, {
+				actor: {
+					exclusiveToUser: user.id,
+					parentId: this.hat.id,
+					name: 'rule1',
+					text: {
+						contents: "Click on the play button to get a random name on your head",
+						height: 0.05,
+						anchor: MRE.TextAnchorLocation.MiddleCenter
+					},
+					transform: {
+						local: {
+							position: { x: 0, y: 1.6, z: 0 },
+							rotation: MRE.Quaternion.FromEulerAngles(
+								0 * MRE.DegreesToRadians,
+								180 * MRE.DegreesToRadians,
+								0 * MRE.DegreesToRadians)
+						}
+					}
+				}
+			});
+			this.rule2 = MRE.Actor.Create(this.context, {
+				actor: {
+					exclusiveToUser: user.id,
+					parentId: this.hat.id,
+					name: 'rule2',
+					text: {
+						contents: "Try to guess this name by asking other players, but",
+						height: 0.05,
+						anchor: MRE.TextAnchorLocation.MiddleCenter
+					},
+					transform: {
+						local: {
+							position: { x: 0, y: 1.5, z: 0 },
+							rotation: MRE.Quaternion.FromEulerAngles(
+								0 * MRE.DegreesToRadians,
+								180 * MRE.DegreesToRadians,
+								0 * MRE.DegreesToRadians)
+						}
+					}
+				}
+			});
+			this.rule3 = MRE.Actor.Create(this.context, {
+				actor: {
+					exclusiveToUser: user.id,
+					parentId: this.hat.id,
+					name: 'rule3',
+					text: {
+						contents: "questions can only be answered by YES or NO.",
+						height: 0.05,
+						anchor: MRE.TextAnchorLocation.MiddleCenter
+					},
+					transform: {
+						local: {
+							position: { x: 0, y: 1.4, z: 0 },
+							rotation: MRE.Quaternion.FromEulerAngles(
+								0 * MRE.DegreesToRadians,
+								180 * MRE.DegreesToRadians,
+								0 * MRE.DegreesToRadians)
+						}
+					}
+				}
+			});
+
+			this.rule4 = MRE.Actor.Create(this.context, {
+				actor: {
+					exclusiveToUser: user.id,
+					parentId: this.hat.id,
+					name: 'rule3',
+					text: {
+						contents: "This version contains famous characters known in : " + this.country,
+						height: 0.05,
+						anchor: MRE.TextAnchorLocation.MiddleCenter
+					},
+					transform: {
+						local: {
+							position: { x: 0, y: 1.2, z: 0 },
+							rotation: MRE.Quaternion.FromEulerAngles(
+								0 * MRE.DegreesToRadians,
+								180 * MRE.DegreesToRadians,
+								0 * MRE.DegreesToRadians)
+						}
+					}
+				}
+			});
+		} else {
+			this.rule1.destroy();
+			this.rule1 = null;
+
+			this.rule2.destroy();
+			this.rule2 = null;
+
+			this.rule3.destroy();
+			this.rule3 = null;
+
+			this.rule4.destroy();
+			this.rule4 = null;
+		}
+
+	}
+
+
 }
