@@ -402,7 +402,7 @@ export default class WearAName {
 		if (!this.rule1) {
 			this.rule1 = MRE.Actor.Create(this.context, {
 				actor: {
-					exclusiveToUser: user.id,
+					//	exclusiveToUser: user.id,
 					parentId: this.hat.id,
 					name: 'rule1',
 					text: {
@@ -423,7 +423,7 @@ export default class WearAName {
 			});
 			this.rule2 = MRE.Actor.Create(this.context, {
 				actor: {
-					exclusiveToUser: user.id,
+					//	exclusiveToUser: user.id,
 					parentId: this.hat.id,
 					name: 'rule2',
 					text: {
@@ -444,7 +444,7 @@ export default class WearAName {
 			});
 			this.rule3 = MRE.Actor.Create(this.context, {
 				actor: {
-					exclusiveToUser: user.id,
+					//exclusiveToUser: user.id,
 					parentId: this.hat.id,
 					name: 'rule3',
 					text: {
@@ -466,7 +466,7 @@ export default class WearAName {
 
 			this.rule4 = MRE.Actor.Create(this.context, {
 				actor: {
-					exclusiveToUser: user.id,
+					//exclusiveToUser: user.id,
 					parentId: this.hat.id,
 					name: 'rule3',
 					text: {
