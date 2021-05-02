@@ -45,13 +45,13 @@ const allowedCountries: string[] = ["france", "world"];
 export default class WearAName {
 	// Container for preloaded name prefabs.
 	private hat: MRE.Actor = null;
-	private rule1: MRE.Actor = null;
-	private rule2: MRE.Actor = null;
-	private rule3: MRE.Actor = null;
-	private rule4: MRE.Actor = null;
 
-	private ruleTitle: MRE.Actor = null;
-	private ruleAuthor: MRE.Actor = null;
+	private rule1 = new Map<MRE.Guid, MRE.Actor>();
+	private rule2 = new Map<MRE.Guid, MRE.Actor>();
+	private rule3 = new Map<MRE.Guid, MRE.Actor>();
+	private rule4 = new Map<MRE.Guid, MRE.Actor>();
+	private ruleTitle = new Map<MRE.Guid, MRE.Actor>();
+	private ruleAuthor = new Map<MRE.Guid, MRE.Actor>();
 
 	private btnPlay: MRE.Actor = null;
 	private btnInfo: MRE.Actor = null;
@@ -167,7 +167,6 @@ export default class WearAName {
 		// Let 'syncfix' know a user has joined.
 		//==========================
 		this.syncfix.userJoined();
-		//console.log(user.id);
 	}
 
 	/**
@@ -321,8 +320,8 @@ export default class WearAName {
 
 			//add button behavior
 			const buttonInfoBehavior = this.btnInfo.setBehavior(MRE.ButtonBehavior);
-			buttonInfoBehavior.onHover('enter', user => this.toggleRules(user));
-			buttonInfoBehavior.onHover('exit', user => this.toggleRules(user));
+			buttonInfoBehavior.onHover('enter', user => this.showRules(user));
+			buttonInfoBehavior.onHover('exit', user => this.hideRules(user));
 
 		}, 1000);
 
@@ -403,7 +402,164 @@ export default class WearAName {
 		this.attachedLabel.delete(user.id);
 	}
 
-	private toggleRules(user: MRE.User) {
+	private hideRules(user: MRE.User) {
+		if (this.rule1.has(user.id)) { this.rule1.get(user.id).destroy(); }
+		this.rule1.delete(user.id);
+		if (this.rule2.has(user.id)) { this.rule2.get(user.id).destroy(); }
+		this.rule2.delete(user.id);
+		if (this.rule3.has(user.id)) { this.rule3.get(user.id).destroy(); }
+		this.rule1.delete(user.id);
+		if (this.rule4.has(user.id)) { this.rule4.get(user.id).destroy(); }
+		this.rule4.delete(user.id);
+		if (this.ruleAuthor.has(user.id)) { this.ruleAuthor.get(user.id).destroy(); }
+		this.ruleAuthor.delete(user.id);
+		if (this.ruleTitle.has(user.id)) { this.ruleTitle.get(user.id).destroy(); }
+		this.ruleTitle.delete(user.id);
+	}
+
+	private showRules(user: MRE.User) {
+		this.hideRules(user);
+		const rule1 = MRE.Actor.Create(this.context, {
+			actor: {
+				exclusiveToUser: user.id,
+				parentId: this.hat.id,
+				name: 'rule1',
+				text: {
+					contents: "Click on the play button to get a random name on your head",
+					height: 0.05,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: {
+						position: { x: 0, y: 1.55, z: 0 },
+						rotation: MRE.Quaternion.FromEulerAngles(
+							0 * MRE.DegreesToRadians,
+							180 * MRE.DegreesToRadians,
+							0 * MRE.DegreesToRadians)
+					}
+				}
+			}
+		});
+		this.rule1.set(user.id, rule1);
+
+		const rule2 = MRE.Actor.Create(this.context, {
+			actor: {
+				exclusiveToUser: user.id,
+				parentId: this.hat.id,
+				name: 'rule2',
+				text: {
+					contents: "Try to guess this name by asking other players, but",
+					height: 0.05,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: {
+						position: { x: 0, y: 1.5, z: 0 },
+						rotation: MRE.Quaternion.FromEulerAngles(
+							0 * MRE.DegreesToRadians,
+							180 * MRE.DegreesToRadians,
+							0 * MRE.DegreesToRadians)
+					}
+				}
+			}
+		});
+		this.rule2.set(user.id, rule2);
+
+		const rule3 = MRE.Actor.Create(this.context, {
+			actor: {
+				exclusiveToUser: user.id,
+				parentId: this.hat.id,
+				name: 'rule3',
+				text: {
+					contents: "questions can only be answered by YES or NO.",
+					height: 0.05,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: {
+						position: { x: 0, y: 1.45, z: 0 },
+						rotation: MRE.Quaternion.FromEulerAngles(
+							0 * MRE.DegreesToRadians,
+							180 * MRE.DegreesToRadians,
+							0 * MRE.DegreesToRadians)
+					}
+				}
+			}
+		});
+		this.rule3.set(user.id, rule3);
+
+		const rule4 = MRE.Actor.Create(this.context, {
+			actor: {
+				exclusiveToUser: user.id,
+				parentId: this.hat.id,
+				name: 'rule3',
+				text: {
+					contents: "This version contains famous " + (this.NameDatabase.length)
+						+ " characters known in : " + this.country,
+					height: 0.05,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: {
+						position: { x: 0, y: 1.3, z: 0 },
+						rotation: MRE.Quaternion.FromEulerAngles(
+							0 * MRE.DegreesToRadians,
+							180 * MRE.DegreesToRadians,
+							0 * MRE.DegreesToRadians)
+					}
+				}
+			}
+		});
+		this.rule4.set(user.id, rule4);
+
+		const ruleTitle = MRE.Actor.Create(this.context, {
+			actor: {
+				exclusiveToUser: user.id,
+				parentId: this.hat.id,
+				name: 'ruleTitle',
+				text: {
+					contents: "Who I am ?",
+					height: 0.08,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: {
+						position: { x: 0, y: 1.7, z: 0 },
+						rotation: MRE.Quaternion.FromEulerAngles(
+							0 * MRE.DegreesToRadians,
+							180 * MRE.DegreesToRadians,
+							0 * MRE.DegreesToRadians)
+					}
+				}
+			}
+		});
+		this.ruleTitle.set(user.id, ruleTitle);
+
+		const ruleAuthor = MRE.Actor.Create(this.context, {
+			actor: {
+				exclusiveToUser: user.id,
+				parentId: this.hat.id,
+				name: 'ruleTitle',
+				text: {
+					contents: "By Barbatruc ( thanks to Extremys :) )",
+					height: 0.03,
+					anchor: MRE.TextAnchorLocation.MiddleCenter
+				},
+				transform: {
+					local: {
+						position: { x: 0, y: 1.65, z: 0 },
+						rotation: MRE.Quaternion.FromEulerAngles(
+							0 * MRE.DegreesToRadians,
+							180 * MRE.DegreesToRadians,
+							0 * MRE.DegreesToRadians)
+					}
+				}
+			}
+		});
+		this.ruleAuthor.set(user.id, ruleAuthor);
+
+	}
+	/*private toggleRules(user: MRE.User) {
 		if (!this.rule1) {
 			this.ruleTitle = MRE.Actor.Create(this.context, {
 				actor: {
@@ -553,7 +709,7 @@ export default class WearAName {
 			this.rule4 = null;
 		}
 
-	}
+	}*/
 
 
 }
