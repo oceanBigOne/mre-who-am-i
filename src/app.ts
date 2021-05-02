@@ -50,6 +50,9 @@ export default class WearAName {
 	private rule3: MRE.Actor = null;
 	private rule4: MRE.Actor = null;
 
+	private ruleTitle: MRE.Actor = null;
+	private ruleAuthor: MRE.Actor = null;
+
 	private btnPlay: MRE.Actor = null;
 	private btnInfo: MRE.Actor = null;
 	private btnRemove: MRE.Actor = null;
@@ -400,6 +403,48 @@ export default class WearAName {
 
 	private toggleRules(user: MRE.User) {
 		if (!this.rule1) {
+			this.ruleTitle = MRE.Actor.Create(this.context, {
+				actor: {
+					//	exclusiveToUser: user.id,
+					parentId: this.hat.id,
+					name: 'ruleTitle',
+					text: {
+						contents: "Who I am ?",
+						height: 0.08,
+						anchor: MRE.TextAnchorLocation.MiddleCenter
+					},
+					transform: {
+						local: {
+							position: { x: 0, y: 1.7, z: 0 },
+							rotation: MRE.Quaternion.FromEulerAngles(
+								0 * MRE.DegreesToRadians,
+								180 * MRE.DegreesToRadians,
+								0 * MRE.DegreesToRadians)
+						}
+					}
+				}
+			});
+			this.ruleAuthor = MRE.Actor.Create(this.context, {
+				actor: {
+					//	exclusiveToUser: user.id,
+					parentId: this.hat.id,
+					name: 'ruleTitle',
+					text: {
+						contents: "By Barbatruc ( thanks to Extremys :) )",
+						height: 0.03,
+						anchor: MRE.TextAnchorLocation.MiddleCenter
+					},
+					transform: {
+						local: {
+							position: { x: 0, y: 1.65, z: 0 },
+							rotation: MRE.Quaternion.FromEulerAngles(
+								0 * MRE.DegreesToRadians,
+								180 * MRE.DegreesToRadians,
+								0 * MRE.DegreesToRadians)
+						}
+					}
+				}
+			});
 			this.rule1 = MRE.Actor.Create(this.context, {
 				actor: {
 					//	exclusiveToUser: user.id,
@@ -412,7 +457,7 @@ export default class WearAName {
 					},
 					transform: {
 						local: {
-							position: { x: 0, y: 1.6, z: 0 },
+							position: { x: 0, y: 1.55, z: 0 },
 							rotation: MRE.Quaternion.FromEulerAngles(
 								0 * MRE.DegreesToRadians,
 								180 * MRE.DegreesToRadians,
@@ -454,7 +499,7 @@ export default class WearAName {
 					},
 					transform: {
 						local: {
-							position: { x: 0, y: 1.4, z: 0 },
+							position: { x: 0, y: 1.45, z: 0 },
 							rotation: MRE.Quaternion.FromEulerAngles(
 								0 * MRE.DegreesToRadians,
 								180 * MRE.DegreesToRadians,
@@ -470,13 +515,14 @@ export default class WearAName {
 					parentId: this.hat.id,
 					name: 'rule3',
 					text: {
-						contents: "This version contains famous characters known in : " + this.country,
+						contents: "This version contains famous " + (this.NameDatabase.length)
+							+ " characters known in : " + this.country,
 						height: 0.05,
 						anchor: MRE.TextAnchorLocation.MiddleCenter
 					},
 					transform: {
 						local: {
-							position: { x: 0, y: 1.2, z: 0 },
+							position: { x: 0, y: 1.3, z: 0 },
 							rotation: MRE.Quaternion.FromEulerAngles(
 								0 * MRE.DegreesToRadians,
 								180 * MRE.DegreesToRadians,
@@ -486,6 +532,12 @@ export default class WearAName {
 				}
 			});
 		} else {
+			this.ruleTitle.destroy();
+			this.ruleTitle = null;
+
+			this.ruleAuthor.destroy();
+			this.ruleAuthor = null;
+
 			this.rule1.destroy();
 			this.rule1 = null;
 
